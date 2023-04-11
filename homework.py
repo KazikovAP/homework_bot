@@ -8,6 +8,7 @@ import json
 
 from http import HTTPStatus
 import telegram
+from settings import RETRY_PERIOD
 
 from dotenv import load_dotenv
 
@@ -17,7 +18,6 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-RETRY_PERIOD = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
@@ -31,9 +31,7 @@ HOMEWORK_VERDICTS = {
 
 def check_tokens() -> bool:
     """Проверяет доступность токенов в окружении."""
-    if not all((PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)):
-        return False
-    return True
+    return all((PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID))
 
 
 def send_message(bot, message):
@@ -118,13 +116,13 @@ def main():
             response = get_api_answer(current_timestamp)
             homeworks = check_response(response)
             current_timestamp = response.get('current_date', int(time.time()))
-            if len(homeworks) > 0:
+            if homeworks:
                 verdict = parse_status(homeworks[0])
                 send_message(bot, verdict)
                 prev_verdict = verdict
                 logging.info('Статус получен')
             else:
-                status_message = 'Статус не обновлен'
+                status_message = 'Пока не проверили:(\nЖдём дальше...'
                 logging.debug(status_message)
                 send_message(bot, status_message)
                 prev_verdict = status_message
@@ -143,7 +141,7 @@ if __name__ == '__main__':
     logging.basicConfig(
         level=logging.INFO,
         filename='homework.log',
-        format='%(asctime)s, %(levelname)s, %(message)s, %(name)s',
+        format='%(asctime)s: %(levelname)s: %(message)s: %(name)s',
         filemode='w',
         encoding='UTF-8')
     main()
