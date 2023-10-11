@@ -1,6 +1,6 @@
+[![Python](https://img.shields.io/badge/-Python-464646?style=flat-square&logo=Python)](https://www.python.org/)
+
 # Homework Bot
-![!PTB](https://img.shields.io/badge/python_telegram_bot-13.9.10-green) 
-![!Requests](https://img.shields.io/badge/requests-2.26.0-green)
 
 ---
 ## Описание проекта
@@ -11,6 +11,11 @@ Homework Bot - телеграм-бот для проверки статуса д
 - Раз в 10 минут опрашивает API сервис Практикум.Домашка и проверет статус отправленной на ревью домашней работы;
 - При обновлении статуса анализирует ответ API и отправляет соответствующее уведомление в Telegram;
 - Логирует свою работу и сообщает о важных проблемах сообщением в Telegram.
+
+---
+## Технологии
+* Python 3.9
+* API
 
 ---
 ## Запуск бота
